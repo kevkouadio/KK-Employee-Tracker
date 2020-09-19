@@ -120,15 +120,112 @@ function viewRoles() {
 };
 
 function addEmployee() {
+  inquirer
+    .prompt([
+    {
+      name: "firstName",
+      type: "input",
+      message: "Enter employee's first name:"
+    },
+    {
+      name: "lastName",
+      type: "input",
+      message: "Enter employee's last name:"
+    },
+    {
+      name: "role_id",
+      type: "number",
+      message: "Enter employee's role_id number:"
+    },
+    {
+      name: "manager_id",
+      type: "number",
+      message: "Enter employee's manager_id number:"
+    },
+    {
+      name: "department_id",
+      type: "number",
+      message: "Enter employee's department_id number:"
+    },
 
+  ])
+    .then(function(answer) {
+      connection.query(
+        "INSERT INTO employees SET ?",
+        {
+          first_name: answer.firstName,
+          last_name: answer.lastName,
+          role_id: answer.role_id,
+          manager_id: answer.manager_id,
+          department_id: answer.department_id
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("Employee " + answer.firstName + "" + answer.lastName + " successfully added!");
+          startApp();
+        }
+      );
+    });
 };
 
 function addDept() {
-
+  inquirer
+    .prompt([
+    {
+      name: "dept",
+      type: "input",
+      message: "Enter new department's name:"
+    }
+  ])
+  .then(function(answer) {
+    connection.query(
+      "INSERT INTO departments SET ?",
+      {
+        name: answer.dept
+      },
+      function(err) {
+        if (err) throw err;
+        console.log("Department " + answer.dept + " successfully added!");
+        startApp();
+      }
+    );
+  });
 };
 
 function addRole() {
-
+  inquirer
+  .prompt([
+  {
+    name: "title",
+    type: "input",
+    message: "Enter new role's name:"
+  },
+  {
+    name: "salary",
+    type: "input",
+    message: "Enter new role's salary:"
+  },
+  {
+    name: "department_id",
+    type: "input",
+    message: "Enter new role's department id number:"
+  },
+])
+.then(function(answer) {
+  connection.query(
+    "INSERT INTO role SET ?",
+    {
+      title: answer.title,
+      salary:answer.salary,
+      department_id: answer.department_id
+    },
+    function(err) {
+      if (err) throw err;
+      console.log("New role " + answer.title + " successfully added!");
+      startApp();
+    }
+  );
+});
 };
 
 function removeEmployee() {
