@@ -229,6 +229,27 @@ function addRole() {
 };
 
 function removeEmployee() {
+  inquirer
+    .prompt([
+    {
+      name: "delete",
+      type: "input",
+      message: "Enter employee's id you would like to removed:"
+    }
+  ])
+  .then(function(answer) {
+    connection.query(
+      "DELETE FROM employees WHERE ?",
+      {
+        id: answer.delete
+      },
+      function(err) {
+        if (err) throw err;
+        console.log("Employee successfully removed!");
+        startApp();
+      }
+    );
+  });
 
 };
 
