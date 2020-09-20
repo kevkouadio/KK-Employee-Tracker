@@ -214,9 +214,9 @@ function addEmployee() {
         }
       );
     })
-  });
-})
-})
+   });
+  })
+ })
 };
 
 function addDept() {
@@ -244,6 +244,15 @@ function addDept() {
 };
 
 function addRole() {
+
+  var deptChoice = [];
+    connection.query("SELECT * FROM departments", function(err, resDept) {
+      if (err) throw err;
+      for (var i = 0; i < resDept.length; i++) {
+        var deptList = resDept[i].name;
+        deptChoice.push(deptList);
+    }
+
   inquirer
   .prompt([
   {
@@ -253,22 +262,31 @@ function addRole() {
   },
   {
     name: "salary",
-    type: "input",
+    type: "number",
     message: "Enter new role's salary:"
   },
   {
     name: "department_id",
-    type: "input",
-    message: "Enter new role's department id number:"
-  },
+    type: "rawlist",
+    message: "Select employee's department:",
+    choices: deptChoice
+  }
 ])
 .then(function(answer) {
+
+  var chosenDept;
+        for (var i = 0; i < resDept.length; i++) {
+          if (resDept[i].name === answer.department_id) {
+            chosenDept = resDept[i];
+          }
+        };
+
   connection.query(
     "INSERT INTO role SET ?",
     {
       title: answer.title,
       salary:answer.salary,
-      department_id: answer.department_id
+      department_id: chosenDept.id
     },
     function(err) {
       if (err) throw err;
@@ -277,34 +295,111 @@ function addRole() {
     }
   );
 });
+})
 };
 
 function removeEmployee() {
+
+  var empChoice = [];
+    connection.query("SELECT id, first_name, last_name FROM employees", function(err, resEmp) {
+      if (err) throw err;
+      for (var i = 0; i < resEmp.length; i++) {
+        var empList = resEmp[i].first_name + " " + resEmp[i].last_name;
+        empChoice.push(empList);
+    };
+
   inquirer
     .prompt([
-    {
-      name: "delete",
-      type: "input",
-      message: "Enter employee's id you would like to removed:"
-    }
+      {
+        name: "employee_id",
+        type: "rawlist",
+        message: "Select the employee you would like to remove:",
+        choices: empChoice
+      },
   ])
   .then(function(answer) {
+
+    var chosenEmp;
+        for (var i = 0; i < resEmp.length; i++) {
+          if (resEmp[i].first_name || resRole[i].last_name === answer.employee_id) {
+            chosenEmp = resEmp[i];
+        }
+      };
+
     connection.query(
-      "DELETE FROM employees WHERE ?",
-      {
-        id: answer.delete
-      },
+      "DELETE FROM employees WHERE id=?",
+      [chosenEmp.id],
+
       function(err) {
         if (err) throw err;
         console.log("Employee successfully removed!");
         startApp();
       }
     );
-  });
-
+   });
+  })
 };
 
 function updateEmployeeRole() {
 
+  var empChoice = [];
+    connection.query("SELECT id, first_name, last_name FROM employees", function(err, resEmp) {
+      if (err) throw err;
+      for (var i = 0; i < resEmp.length; i++) {
+        var empList = resEmp[i].first_name + " " + resEmp[i].last_name;
+        empChoice.push(empList);
+    };
+    
+    var roleChoice = [];
+  connection.query("SELECT * FROM role", function(err, resRole) {
+    if (err) throw err;
+    for (var i = 0; i < resRole.length; i++) {
+      var roleList = resRole[i].title;
+      roleChoice.push(roleList);
+    };
+
+    inquirer
+    .prompt([
+    {
+      name: "employee_id",
+      type: "rawlist",
+      message: "Select the employee you would like to update:",
+      choices: empChoice
+    },
+    {
+      name: "role_id",
+      type: "rawlist",
+      message: "Select employee's new role:",
+      choices: roleChoice
+    }
+  ])
+  .then(function(answer) {
+
+    var chosenEmp;
+        for (var i = 0; i < resEmp.length; i++) {
+          if (resEmp[i].first_name || resRole[i].last_name === answer.employee_id) {
+            chosenEmp = resEmp[i];
+        }
+      };
+
+    var chosenRole;
+      for (var i = 0; i < resRole.length; i++) {
+        if (resRole[i].title === answer.role_id) {
+          chosenRole = resRole[i];
+        }
+      };
+      connection.query(
+        "UPDATE employees SET role_id = ? WHERE id = ?",
+
+        [chosenRole.id, chosenEmp.id],
+        function(err) {
+          if (err) throw err;
+          console.log("Employee new role successfully updated!");
+          startApp();
+        }
+      );
+    })
+   })
+  })
 };
 
