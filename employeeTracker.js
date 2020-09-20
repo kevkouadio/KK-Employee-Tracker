@@ -120,6 +120,30 @@ function viewRoles() {
 };
 
 function addEmployee() {
+  var roleChoice = [];
+  connection.query("SELECT * FROM role", function(err, resRole) {
+    if (err) throw err;
+    for (var i = 0; i < resRole.length; i++) {
+      var roleList = resRole[i].title;
+      roleChoice.push(roleList);
+    };
+
+    var managerChoice = [];
+    connection.query("SELECT id, first_name, last_name FROM employees", function(err, resEmp) {
+      if (err) throw err;
+      for (var i = 0; i < resEmp.length; i++) {
+        var empList = resEmp[i].first_name + " " + resEmp[i].last_name;
+        managerChoice.push(empList);
+    };
+
+    var deptChoice = [];
+    connection.query("SELECT * FROM departments", function(err, resDept) {
+      if (err) throw err;
+      for (var i = 0; i < resDept.length; i++) {
+        var deptList = resDept[i].name;
+        deptChoice.push(deptList);
+    }
+    
   inquirer
     .prompt([
     {
@@ -134,38 +158,65 @@ function addEmployee() {
     },
     {
       name: "role_id",
-      type: "number",
-      message: "Enter employee's role_id number:"
+      type: "rawlist",
+      message: "Select employee role:",
+      choices: roleChoice
     },
     {
       name: "manager_id",
-      type: "number",
-      message: "Enter employee's manager_id number:"
+      type: "rawlist",
+      message: "Select employee's manager:",
+      choices: managerChoice
     },
     {
       name: "department_id",
-      type: "number",
-      message: "Enter employee's department_id number:"
+      type: "rawlist",
+      message: "Select employee's department:",
+      choices: deptChoice
     },
 
   ])
     .then(function(answer) {
+      var chosenRole;
+        for (var i = 0; i < resRole.length; i++) {
+          if (resRole[i].title === answer.role_id) {
+            chosenRole = resRole[i];
+          }
+        };
+
+        var chosenManager;
+        for (var i = 0; i < resEmp.length; i++) {
+          if (resEmp[i].first_name || resRole[i].last_name === answer.manager_id) {
+            chosenManager = resEmp[i];
+          }
+        };
+
+        var chosenDept;
+        for (var i = 0; i < resDept.length; i++) {
+          if (resDept[i].name === answer.department_id) {
+            chosenDept = resDept[i];
+          }
+        };
+
       connection.query(
         "INSERT INTO employees SET ?",
         {
           first_name: answer.firstName,
           last_name: answer.lastName,
-          role_id: answer.role_id,
-          manager_id: answer.manager_id,
-          department_id: answer.department_id
+          role_id: chosenRole.id,
+          manager_id: chosenManager.id,
+          department_id: chosenDept.id
         },
         function(err) {
           if (err) throw err;
-          console.log("Employee " + answer.firstName + "" + answer.lastName + " successfully added!");
+          console.log("Employee " + answer.firstName + " " + answer.lastName + " successfully added!");
           startApp();
         }
       );
-    });
+    })
+  });
+})
+})
 };
 
 function addDept() {
