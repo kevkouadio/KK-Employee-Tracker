@@ -13,7 +13,7 @@ This app is a Content Management Systems that make it easy for non-developers to
 ## Installation
 The app uses node, inquirer, console.table and MySQL. So the user need to intall the all dependancies by running ```npm install```.
 ## Usage
-After installing all the dependencies, run ```node emplyeeTracker.js``` in your termial command. Then use the keyboard arrows to select and respond to all the prompt questions. 
+After installing all the dependencies, run ```node employeeTracker.js``` in your termial command. Then use the keyboard arrows to select and respond to all the prompt questions. 
 The user can view, add, update and remove employees information.
 ## Licence
 This app is under the MIT License.
