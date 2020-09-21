@@ -21,6 +21,7 @@ connection.connect(function(err) {
     startApp();
   });
 
+//Function that starts the app and prompt the questions
 function startApp() {
   inquirer
     .prompt({
@@ -89,6 +90,7 @@ function startApp() {
   });
 }
 
+//Function view all employees
 function viewEmployees() {
     var query = `SELECT employees.id, employees.first_name, employees.last_name, role.title, departments.name AS department, role.salary, 
     CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employees LEFT JOIN role on employees.role_id = role.id 
@@ -99,15 +101,17 @@ function viewEmployees() {
     });
 };
 
+//Function view all employees by department
 function viewEmployeesByDept() {
     var query =`SELECT departments.name AS department, employees.id, employees.first_name, employees.last_name, role.title FROM employees LEFT JOIN role on 
     employees.role_id = role.id LEFT JOIN departments departments on role.department_id = departments.id WHERE departments.id;`;
     connection.query(query, function(err, query){
       console.table(query);
       startApp();
-});
+  });
 };
 
+//Function to view all departments
 function viewDept() {
   var query = `select id AS Dept_ID, name AS departments from departments;`;
   connection.query(query, function(err, query){
@@ -116,6 +120,7 @@ function viewDept() {
   });
 };
 
+//Function to view all roles
 function viewRoles() {
   var query = `select id AS Role_ID, title from role;`;
   connection.query(query, function(err, query){
@@ -124,7 +129,9 @@ function viewRoles() {
   });
 };
 
+//Function to add a new employee
 function addEmployee() {
+  //arrays to display prompt choices from database items 
   var roleChoice = [];
   connection.query("SELECT * FROM role", function(err, resRole) {
     if (err) throw err;
@@ -168,6 +175,7 @@ function addEmployee() {
 
   ])
     .then(function(answer) {
+      //for loop to retun 
       var chosenRole;
         for (var i = 0; i < resRole.length; i++) {
           if (resRole[i].title === answer.role_id) {
@@ -181,7 +189,7 @@ function addEmployee() {
             chosenDept = resDept[i];
           }
         };
-
+      //connection to insert response into database  
       connection.query(
         "INSERT INTO employees SET ?",
         {
@@ -201,6 +209,7 @@ function addEmployee() {
   })
 };
 
+//Function to add department
 function addDept() {
   inquirer
     .prompt([
@@ -225,8 +234,8 @@ function addDept() {
   });
 };
 
+//Function to new add role
 function addRole() {
-
   var deptChoice = [];
     connection.query("SELECT * FROM departments", function(err, resDept) {
       if (err) throw err;
@@ -280,8 +289,8 @@ function addRole() {
 })
 };
 
+//Function to remove employee
 function removeEmployee() {
-
   var empChoice = [];
     connection.query("SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employees", function(err, resEmp) {
       if (err) throw err;
@@ -322,8 +331,8 @@ function removeEmployee() {
   })
 };
 
+//Function to update employee role
 function updateEmployeeRole() {
-
   var empChoice = [];
     connection.query("SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employees", function(err, resEmp) {
       if (err) throw err;
@@ -372,7 +381,6 @@ function updateEmployeeRole() {
       };
       connection.query(
         "UPDATE employees SET role_id = ? WHERE id = ?",
-
         [chosenRole.id, chosenEmp.id],
         function(err) {
           if (err) throw err;
@@ -385,8 +393,8 @@ function updateEmployeeRole() {
   })
 };
 
+//Function to update employee manager
 function updateEmployeeMng() {
-  
   var empChoice = [];
     connection.query("SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employees", function(err, resEmp) {
       if (err) throw err;
