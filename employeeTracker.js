@@ -3,6 +3,16 @@ var inquirer = require("inquirer");
 var consoleTable = require("console.table");
 var figlet = require('figlet');
 
+//code from figlet module to display a drawing of employee tracker on the command line
+figlet('EMPLOYEE TRACKER!!', function(err, data) {
+  if (err) {
+      console.log('Something went wrong...');
+      console.dir(err);
+      return;
+  }
+  console.log(data)
+});
+
 var connection = mysql.createConnection({
   host: "localhost",
 
@@ -21,19 +31,9 @@ connection.connect(function(err) {
     if (err) throw err;
     startApp();
   });
-
-//code from figlet module to display a drawing of employee tracker on command line
-figlet('EMPLOYEE TRACKER!!', function(err, data) {
-  if (err) {
-      console.log('Something went wrong...');
-      console.dir(err);
-      return;
-  }
-  console.log(data)
-});
+ 
 //Function that starts the app and prompt the questions
 function startApp() {
-  
   inquirer
     .prompt({
       name: "action",
