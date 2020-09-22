@@ -3,14 +3,14 @@ var inquirer = require("inquirer");
 var consoleTable = require("console.table");
 var figlet = require('figlet');
 
-//code from figlet module to display a drawing of employee tracker on the command line
+//code from figlet module to display a drawing of employee tracker before first prompt
 figlet('EMPLOYEE TRACKER!!', function(err, data) {
   if (err) {
-      console.log('Something went wrong...');
-      console.dir(err);
-      return;
-  }
-  console.log(data)
+    console.log('Something went wrong...');
+    console.dir(err);
+    return;
+}
+console.log(data)
 });
 
 var connection = mysql.createConnection({
@@ -23,7 +23,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "elboban003",
+  password: "",
   database: "employeeDb"
 });
 
@@ -96,6 +96,7 @@ function startApp() {
       break;
     
     case "EXIT":
+      console.log("Thanks for using Employee Tracker! Have a nice day!")
       process.exit();
     }
   });
@@ -133,7 +134,7 @@ function viewDept() {
 
 //Function to view all roles
 function viewRoles() {
-  var query = `select id AS Role_ID, title from role;`;
+  var query = `select id AS Role_ID, title, salary AS Salaries from role;`;
   connection.query(query, function(err, query){
     console.table(query);
     startApp();
